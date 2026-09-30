@@ -1,0 +1,16 @@
+# Publish code only. Never place source workbooks inside this project.
+*.xlsx
+*.xls
+*.xlsm
+*.csv
+*.tsv
+*.zip
+*.json
+*.png
+*.jpg
+*.pdf
+source/
+data/
+private/
+node_modules/
+.env*
