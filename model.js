@@ -88,19 +88,21 @@
           values.set(address,n);return n;
         }
         const number=h=>numericAddress(XLSX.utils.encode_cell({r,c:columns.get(norm(h))}));
-        let sold,cost,gp,actualSold=null,actualCost=null,actualProfit=null;
+        let sold=null,cost=null,gp=null,estimateValid=false,actualStatus='blank',actualSold=null,actualCost=null,actualProfit=null;
         try{
           sold=number(soldLabel);cost=number(spec.kind==='ps'?'BOUGHT AT E':'BOUGHT AT');gp=number(spec.kind==='ps'?'GROSS PROFIT E':'GROSS PROFIT');
-        }catch(e){warn(`Excluded row: ${e.message}`);continue;}
+          estimateValid=true;
+        }catch(e){sold=cost=gp=null;if(spec.kind==='hw'){warn(`Excluded row: ${e.message}`);continue;}warn(`PS estimates unavailable: ${e.message}`);}
         if(spec.kind==='ps'&&['BOUGHT AT','SOLD AT','PROFIT'].some(h=>present(val(r,h))||cell(r,h)?.f)){
-          try{actualSold=number('SOLD AT');actualCost=number('BOUGHT AT');actualProfit=number('PROFIT');}
-          catch(e){actualSold=actualCost=actualProfit=null;warn(`PS actuals excluded: ${e.message}`);}
+          try{actualSold=number('SOLD AT');actualCost=number('BOUGHT AT');actualProfit=number('PROFIT');actualStatus='complete';}
+          catch(e){actualSold=actualCost=actualProfit=null;actualStatus='partial';warn(`PS actuals incomplete or invalid; the rollup uses the complete estimate pair if available: ${e.message}`);}
         }
+        if(spec.kind==='ps'&&!estimateValid&&actualStatus!=='complete'){warn('Excluded row: neither complete estimates nor complete actuals available.');continue;}
         const customer=text(val(r,'Customer'))||'(Not provided)',vendor=text(val(r,'Vendor'))||'(Not provided)';
         if(!present(val(r,'Customer')))warn('Customer missing; shown as Not provided.');
         if(!present(val(r,'Vendor')))warn('Vendor missing; no OEM is inferred.');
         if(gp<0)warn('Negative gross profit retained in totals.');
-        records.push({kind:spec.kind,row,sheet:spec.name,id:text(val(r,'Deal ID')),date,customer,vendor,name:text(val(r,'Deal Name')),sold,cost,gp,actualSold,actualCost,actualProfit,invoice:present(val(r,'INVOICE #')),paid:present(val(r,'DATE PAID')),rep:present(val(r,'REP'))});
+        records.push({kind:spec.kind,row,sheet:spec.name,id:text(val(r,'Deal ID')),date,customer,vendor,name:text(val(r,'Deal Name')),sold,cost,gp,estimateValid,actualStatus,actualSold,actualCost,actualProfit,invoice:present(val(r,'INVOICE #')),paid:present(val(r,'DATE PAID')),rep:present(val(r,'REP'))});
       }
     }
     if(!records.length)throw new Error('No valid dated sales rows found. '+issues.slice(0,3).map(i=>`${i.location}: ${i.message}`).join(' '));
@@ -125,6 +127,13 @@
       if(offset>end)throw new Error('Invalid workbook directory length.');
     }
   }
-  const api={inspectWorkbook,parseDate,arithmetic,summarize,validateContainer};
+  function selectFinancials(record,basis='combined'){
+    if(record.kind==='hw')return basis==='combined'||basis==='hw'?{...record,sales:record.sold,profit:record.gp,financialBasis:'Hardware + software'}:null;
+    if(basis==='hw')return null;
+    const useActual=basis==='actual'||((basis==='combined'||basis==='ps-best')&&record.actualStatus==='complete');
+    if(useActual)return record.actualStatus==='complete'?{...record,sales:record.actualSold,profit:record.actualProfit,financialBasis:'PS actuals'}:null;
+    return record.estimateValid?{...record,sales:record.sold,profit:record.gp,financialBasis:'PS estimates'}:null;
+  }
+  const api={inspectWorkbook,parseDate,arithmetic,summarize,validateContainer,selectFinancials};
   root.DealLog=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(globalThis);

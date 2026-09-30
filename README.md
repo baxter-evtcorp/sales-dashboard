@@ -2,6 +2,10 @@
 
 Open `index.html` in current Microsoft Edge or Chrome and choose a local `.xlsx` Deal Log. No build or server is required. Choose the file again after saving updates. Replacing a file clears the old model and filters before parsing; an invalid replacement cannot leave stale totals on screen.
 
+## Combined rollup
+
+The default view adds HW/SW revenue and GP to PS exactly once per row. PS uses the complete actual SOLD AT / BOUGHT AT / PROFIT set when present, including zero. Otherwise it uses the complete estimated SOLD AT E / GROSS PROFIT E pair (with its validated cost input). Partial or invalid actuals are flagged and fall back as a whole pair, never per metric. Complete actuals can be used even if estimates are missing. PS actual PROFIT is explicitly labeled as the GP proxy because the source has no actual gross-profit field. The component table reconciles the filtered totals and labels estimated contributions. All date/customer/vendor filters apply to both logs in the combined view.
+
 ## Views
 
 - Hardware/software: `SOLD AT`, `GROSS PROFIT`, aggregate gross margin.
