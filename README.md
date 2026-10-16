@@ -18,7 +18,7 @@ Filters: year, calendar quarter, customer, vendor. Charts: monthly sales and cus
 
 Reads only `2026 HW+SW Log` and `2026 PS Log`. Finds the header within the first 12 rows and maps by normalized header names; reordered columns are supported. Missing/renamed/duplicate headers stop import with a mapping message. A renamed tab requires updating the source contract. All other tabs are excluded, including summaries and historical templates.
 
-Date Closed accepts Excel date serials (1900/1904 systems), MM/DD/YY, MM/DD/YYYY or ISO YYYY-MM-DD. Two-digit years mean 2000-2099. Coverage is derived from valid included records and does not assert completeness. Template rows containing only IDs/formulas and summary totals are excluded. Invalid business rows are reported, not silently converted to zeros.
+Date Closed accepts Excel date serials (1900/1904 systems), MM/DD/YY, MM/DD/YYYY or ISO YYYY-MM-DD. Two-digit years mean 2000–2099. Coverage is derived from valid included records and does not assert completeness. Template rows containing only IDs/formulas and summary totals are excluded. Invalid business rows are reported, not silently converted to zeros.
 
 Financial inputs must be numeric. A small arithmetic parser recalculates same-row `+ - * /` formulas and parentheses. It never uses `eval` or executes spreadsheet code. Blank Deduction references mean zero, matching the inspected template. Other missing inputs, cross-row formulas, Excel errors, functions and external references are rejected for that row with a source finding. For a new formula pattern, review its business meaning before extending the parser. Numeric GP overrides remain as supplied. Cached values that differ from recalculation are flagged. This is not a general Excel calculation engine.
 
