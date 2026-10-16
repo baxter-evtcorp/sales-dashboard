@@ -18,7 +18,7 @@ Filters: year, calendar quarter, customer, vendor. Charts: monthly sales and cus
 
 Reads only `2026 HW+SW Log` and `2026 PS Log`. Finds the header within the first 12 rows and maps by normalized header names; reordered columns are supported. Missing/renamed/duplicate headers stop import with a mapping message. A renamed tab requires updating the source contract. All other tabs are excluded, including summaries and historical templates.
 
-Date Closed accepts Excel date serials (1900/1904 systems), MM/DD/YY, MM/DD/YYYY or ISO YYYY-MM-DD. Two-digit years mean 2000–2099. Coverage is derived from valid included records and does not assert completeness. Template rows containing only IDs/formulas and summary totals are excluded. Invalid business rows are reported, not silently converted to zeros.
+Date Closed accepts Excel date serials (1900/1904 systems), MM/DD/YY, MM/DD/YYYY or ISO YYYY-MM-DD. Two-digit years mean 2000-2099. Coverage is derived from valid included records and does not assert completeness. Template rows containing only IDs/formulas and summary totals are excluded. Invalid business rows are reported, not silently converted to zeros.
 
 Financial inputs must be numeric. A small arithmetic parser recalculates same-row `+ - * /` formulas and parentheses. It never uses `eval` or executes spreadsheet code. Blank Deduction references mean zero, matching the inspected template. Other missing inputs, cross-row formulas, Excel errors, functions and external references are rejected for that row with a source finding. For a new formula pattern, review its business meaning before extending the parser. Numeric GP overrides remain as supplied. Cached values that differ from recalculation are flagged. This is not a general Excel calculation engine.
 
@@ -26,7 +26,7 @@ Amounts display the workbook's dollar convention; the currency is not independen
 
 ## Privacy and publishing
 
-All workbook processing runs in memory. No upload, runtime CDN, telemetry, network call, browser storage or data export is used. CSP blocks connections and restricts scripts/styles to this directory. Spreadsheet text is rendered via `textContent`. Clear workbook or close the page to discard session data. A website host receives ordinary page requests, not selected workbook contents.
+All workbook processing runs in memory. No upload, runtime CDN, telemetry, network call, browser storage or automatic data export is used. CSP blocks connections and restricts scripts/styles to this directory. Spreadsheet text is rendered via `textContent`. Clear workbook or close the page to discard session data. A website host receives ordinary page requests, not selected workbook contents.
 
 Publish **only this directory**, never its parent or sibling `source/`. No real records, source workbook, customer names, financial totals, private screenshots, or real-data fixtures belong in this directory. Ignore rules supplement the mandatory source-only audit. Do not alter an existing repository or publish until the exact repository and scope are approved. No repository is initialized by this project.
 
@@ -39,3 +39,9 @@ SHA-256: `cc015130aa8521e7f088f88898eba949ccdcbfb38df0bd129b44b7273c3a6f41`
 Vendoring guidance: https://docs.sheetjs.com/docs/getting-started/installation/standalone/
 
 Input limits: 25 MB file size, 80 MB declared expanded ZIP content, 5,000 ZIP entries, 20,000 sheet-row index and 201 columns. Encrypted and multipart workbooks are unsupported. Keep the bundled library current through deliberate, tested updates; no automatic update mechanism is used.
+
+## Export to PDF
+
+After importing a valid workbook, select the desired view and filters, then click **Export to PDF** and choose **Save as PDF** in the browser print dialog. The report includes source/load time, generation time, Date Closed coverage, filter context, totals, component reconciliation, charts, vendor summary, all matching detail rows across every page, and workbook-wide source checks. Detail search affects only the detail table and is recorded in the report. Empty filter/search results are explicitly labeled. Before import or after a failed replacement/clear, the export button is disabled. Browser Print also uses the report layout.
+
+The print layout defaults to landscape with repeating table headings and wrapped cells. The customer chart retains its labeled top-eight scope. Save locally and handle the PDF as private workbook data. Printing sends no workbook data to this website; select a local PDF destination. Canceling or completing print restores detail pagination and the source-check disclosure state.
